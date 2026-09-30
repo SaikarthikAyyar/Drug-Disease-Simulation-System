@@ -18,7 +18,7 @@ venv/
 data/raw
 data/processed/
 mlruns/
-models/
+/models/
 *.pt
 *.pth
 *.onnx
