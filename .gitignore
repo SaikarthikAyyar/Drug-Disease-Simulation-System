@@ -1,0 +1,37 @@
+# --- Secrets (never commit) ---
+
+.env
+.env.*
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache
+.ipnb_checkpoints/
+
+# --- Data & model artifacts (versioned with DVC / HF Hub, not git) ---
+
+data/raw
+data/processed/
+mlruns/
+models/
+*.pt
+*.pth
+*.onnx
+*.pkl
+*.joblib
+
+# --- Frontend ---
+
+node_modules/
+frontend/dist/
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
