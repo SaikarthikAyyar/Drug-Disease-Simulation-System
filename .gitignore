@@ -12,6 +12,7 @@ venv/
 *.egg-info/
 .pytest_cache
 .ipnb_checkpoints/
+.ruff_cache/
 
 # --- Data & model artifacts (versioned with DVC / HF Hub, not git) ---
 
