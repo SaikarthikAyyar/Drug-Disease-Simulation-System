@@ -18,7 +18,7 @@ replace lab experiments.
 - Evaluation uses scaffold splits; approved drugs + close analogues are held out of training.
 - Every prediction carries uncertainty and an applicability-domain flag.
 - Walking skeleton: deployed end-to-end in Phase 0; each phase upgrades the live app.
-- Deployment: React/Vite → Vercel · FastAPI (Docker) → Hugging Face Spaces ·
+- Deployment: React/Vite → Vercel · FastAPI (Docker) → Render ·
   Supabase (Phase 8) · DagsHub MLflow + HF Hub registry (Phase 9) · GitHub Actions CI.
 - Batch screening (CSV → ranked shortlist) is in core scope.
 
@@ -50,7 +50,7 @@ A rung counts only once the rung below passes.
 ## Phases
 | # | Phase | Status |
 |---|---|---|
-| 0 | Skeleton + deployment (repo, env, stub API on HF Spaces, stub UI on Vercel, CI) | 🔨 |
+| 0 | Skeleton + deployment (repo, env, stub API on Render, stub UI on Vercel, CI) | 🔨 |
 | 1 | Data — ChEMBL + MoleculeNet, standardisation, scaffold split, approved-drug holdout, decoys, DVC | ⏳ |
 | 2 | Baselines + drug-likeness + novelty — fingerprints/descriptors → RF/XGBoost, MLflow | ⏳ |
 | 3 | PyTorch models — MLP (port of v1), ChemBERTa fine-tune, uncertainty, applicability domain | ⏳ |
@@ -67,5 +67,36 @@ A rung counts only once the rung below passes.
 Planning / Implementation / Validation passes. Each phase ends with a validation pass,
 including a push and a live-deployment check.
 
+## Deployment decisions
+
+### API host: Render (changed 2026-10-03)
+Originally planned for Hugging Face Spaces. HF now restricts Docker and Gradio Spaces to
+PRO ($9/mo); only Static Spaces remain free, and those cannot run Python. Alternatives
+checked: Fly.io dropped its free tier, Koyeb now requires a payment method with a $29 hold.
+
+Render free tier chosen: Docker supported, no credit card, 750 instance-hours/month per
+workspace, 512 MB RAM / 0.1 CPU, auto-deploys on push to `main`, spins down after 15 min
+idle (~1 min cold start). HF Hub is still used for model storage in Phase 9 — only Spaces
+became paid.
+
+**Consequence — the 512 MB serving budget.** Phases 0–2 (RDKit, scikit-learn, XGBoost) fit
+comfortably. Phase 3's ChemBERTa (~83M params, fp32) plus PyTorch does not. Plan: train in
+PyTorch on the local GPU, then **export to ONNX and quantise to int8** for serving (~80 MB,
+and PyTorch drops out of the deployed image entirely). The train-heavy / serve-light split
+is standard production practice, so the constraint improves the design.
+
+Note: RAAS-DOS shares the same Render workspace, so the 750 free hours are shared. Both
+services sleep when idle, so this should stay within budget — worth monitoring.
+
 ## Log
 - 2026-09-30 — Planning Pass 1 complete; plan approved.
+- 2026-10-01 — Task 0.1 done: repo created, `.gitignore`/README/PLAN/LICENSE on `main`.
+- 2026-10-01 — Task 0.2 done: `.venv` (Python 3.12), PyTorch 2.11.0+cu128 with CUDA
+  verified on the RTX 3060, RDKit, `src/` layout installed as editable package `ddss`,
+  pinned requirements, smoke test passing.
+- 2026-10-01 — Task 0.3a done: `ddss.features.descriptors` (7 RDKit descriptors,
+  `InvalidSmilesError`, canonical SMILES) + FastAPI `/health` and `/predict`; 8 tests pass.
+  Local port 8001 (RAAS-DOS owns 8000).
+- 2026-10-03 — Task 0.3b done: Dockerfile + .dockerignore; API live at
+  https://ddss-api.onrender.com — verified in production: aspirin 180.159, caffeine 194.19,
+  invalid/empty SMILES → 422 with user-safe messages, CORS preflight OK, valid TLS.
