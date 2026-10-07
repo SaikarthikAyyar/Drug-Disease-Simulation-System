@@ -100,3 +100,9 @@ services sleep when idle, so this should stay within budget — worth monitoring
 - 2026-10-03 — Task 0.3b done: Dockerfile + .dockerignore; API live at
   https://ddss-api.onrender.com — verified in production: aspirin 180.159, caffeine 194.19,
   invalid/empty SMILES → 422 with user-safe messages, CORS preflight OK, valid TLS.
+- 2026-10-07 — Task 0.4 done: React + Vite frontend (SMILES input, descriptor table,
+  user-safe errors) live at https://drug-disease-simulation-system.vercel.app —
+  verified in-browser against the live API; `VITE_API_URL` confirmed baked into the
+  production bundle. Vercel project name is `drug-disease-simulation-system`
+  (`ddss` was taken); Root Directory set to `frontend`.
+

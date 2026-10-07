@@ -12,12 +12,14 @@ help or hurt.
 being applied to novel compounds for incurable ones (see the verification ladder in PLAN.md).
 
 ## Live demo
-API: **https://ddss-api.onrender.com/docs**
+
+- **App:** https://drug-disease-simulation-system.vercel.app
+- **API docs:** https://ddss-api.onrender.com/docs
 
 *Hosted on a free tier that sleeps after 15 minutes of inactivity — the first request
 after an idle period takes about a minute to wake the service.*
 
-Try it: `POST /predict` with `{"smiles": "CC(=O)Oc1ccccc1C(=O)O"}` (aspirin).
+Try the API directly: `POST /predict` with `{"smiles": "CC(=O)Oc1ccccc1C(=O)O"}` (aspirin).
 
 ## Status
 | Phase | State |
