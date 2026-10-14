@@ -1,6 +1,5 @@
 # Drug-Disease Simulation System
-[![CI](https://github.com/SaikarthikAyyar/Drug-Disease-Simulation-System/actions/workflows/ci.yml/badge.svg)]
-(https://github.com/SaikarthikAyyar/Drug-Disease-Simulation-System/actions/workflows/ci.yml)
+[![CI](https://github.com/SaikarthikAyyar/Drug-Disease-Simulation-System/actions/workflows/ci.yml/badge.svg)](https://github.com/SaikarthikAyyar/Drug-Disease-Simulation-System/actions/workflows/ci.yml)
 
 > 🚧 **Work in progress** — being rebuilt from scratch. See [PLAN.md](PLAN.md) for the roadmap.
 
