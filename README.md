@@ -26,6 +26,7 @@ Try the API directly: `POST /predict` with `{"smiles": "CC(=O)Oc1ccccc1C(=O)O"}`
 | Phase | State |
 |---|---|
 | 0 · Skeleton + deployment | ✅ complete — API + frontend live, CI green |
+| 1 · Data foundation | 🔨 in progress |
 
 ## Background
 v1 was a university group project in which I built the Python ML backend. v2 is a solo
