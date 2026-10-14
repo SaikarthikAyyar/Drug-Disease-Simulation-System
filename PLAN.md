@@ -208,3 +208,51 @@ services sleep when idle, so this should stay within budget — worth monitoring
   scope reframed from "predict patient outcome" to validated prioritisation with explicit
   uncertainty. Phases restructured into vertical slices. Targets verified against ChEMBL
   and RCSB. BACE1 finding recorded. Two data caveats open.
+
+## Phase 1 — Data foundation (planned 2026-10-14)
+
+### Decisions
+- **Activity types:** IC50 and Ki kept, modelled **separately** — never merged. Mixing
+  assay types into one pChEMBL value inflates data at the cost of a question no reviewer
+  lets pass.
+- **Quality filter (standard):** exact relations only (drop censored `>`/`<`), defined
+  units, human target (except HIV-1 RT, viral), activity within 1 nM – 100 µM, single-point
+  screens excluded. **Every filter reports how many compounds it removed**; the attrition
+  table renders on the dataset panel as evidence of rigour.
+- **Split:** Bemis–Murcko scaffold split, 70/15/15 train/val/test, fixed seed, scaffold
+  groups assigned largest-first so the test set holds genuinely unseen chemistry.
+  Approved drugs are removed **before** the split into their own evaluation set (ladder
+  rung 1). Random splits are never used — they overstate accuracy for molecules.
+- **DVC: deferred to Phase 11.** The download script is the reproducibility guarantee at
+  this stage; data stays local and out of git. Revisit when a DagsHub remote exists.
+
+### Architecture requirement: targets are configuration, not code
+All five targets live in `configs/targets.yaml` (chembl_id, uniprot, disease, tier, pdb,
+pdb_note, support level). Download, standardisation, split, training and evaluation all
+parameterise off it. **No target ID appears anywhere in the code.** Test of correctness:
+adding a sixth target must be a config entry plus a pipeline run, with zero code changes.
+
+Two support levels, declared in the UI:
+- **Tier A (full):** ML + uncertainty + docking + pose overlay + pathway + simulation.
+  The current five. Each costs hours–days of manual structural work (protein prep, pocket
+  definition, pose validation), so this tier realistically caps around 5.
+- **Tier B (ranking only):** ML prediction + uncertainty + applicability domain + novelty,
+  no structural claims. Nearly free per target; could extend to 15–20 late in the project.
+
+Decision: **do not add targets now.** Breadth adds no new capability; depth (uncertainty,
+pose overlay, verification ladder) is what distinguishes the project. Expansion to Tier B
+targets belongs in Phase 11, where the worthwhile question is *does model accuracy hold
+across target families, or only kinases?* — a real result, not a longer target list.
+
+### Tasks
+| # | Task | Deliverable |
+|---|---|---|
+| 1.1 | `references.yaml` + citation plumbing + `configs/targets.yaml` | Sourcing and target config in place before any data lands |
+| 1.2 | Download: ChEMBL activities (5 targets), Tox21, approved-drug list | Raw data on disk, re-runnable script |
+| 1.3 | Standardise: canonical SMILES, salt strip, charge normalise, dedupe, aggregate replicates, IC50/Ki → pIC50/pKi | Clean per-target tables; v1 did none of this |
+| 1.4 | Split: scaffold split + approved-drug holdout | train/val/test + holdout sets |
+| 1.5 | API: `/datasets`, `/datasets/{target}` | Stats served |
+| 1.6 | Dataset explorer panel, deployed | Counts, activity distributions, split composition, attrition table, held-out drugs |
+
+Panel scope for Phase 1 is deliberately plain — its job is to let the data be checked,
+not to impress. The showpiece panels are Phases 5 and 8.
