@@ -1,4 +1,6 @@
 # Drug-Disease Simulation System
+[![CI](https://github.com/SaikarthikAyyar/Drug-Disease-Simulation-System/actions/workflows/ci.yml/badge.svg)]
+(https://github.com/SaikarthikAyyar/Drug-Disease-Simulation-System/actions/workflows/ci.yml)
 
 > 🚧 **Work in progress** — being rebuilt from scratch. See [PLAN.md](PLAN.md) for the roadmap.
 
@@ -24,7 +26,7 @@ Try the API directly: `POST /predict` with `{"smiles": "CC(=O)Oc1ccccc1C(=O)O"}`
 ## Status
 | Phase | State |
 |---|---|
-| 0 · Skeleton + deployment | 🔨 in progress — API live, frontend + CI pending |
+| 0 · Skeleton + deployment | ✅ complete — API + frontend live, CI green |
 
 ## Background
 v1 was a university group project in which I built the Python ML backend. v2 is a solo
